@@ -1,37 +1,68 @@
-const uploadForm = document.getElementById('uploadForm');
-const photoInput = document.getElementById('photoInput');
-const statusMessage = document.getElementById('statusMessage');
+const form = document.getElementById('uploadForm');
+const inputFile = document.getElementById('file');
+const statusDiv = document.getElementById('status');
 
-uploadForm.addEventListener('submit', async (e) => {
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const files = photoInput.files;
-  if (files.length === 0) {
-    statusMessage.textContent = 'Veuillez sélectionner au moins une photo.';
+  // Reset messages
+  statusDiv.textContent = '';
+  statusDiv.className = '';
+
+  if (!inputFile.files.length) {
+    showError("Veuillez sélectionner au moins une photo.");
     return;
   }
 
+  const files = inputFile.files;
   const formData = new FormData();
+
   for (const file of files) {
+    // Optionnel: vérifier taille max (ex: 10 Mo)
+    if (file.size > 10 * 1024 * 1024) {
+      showError(`Le fichier "${file.name}" est trop volumineux (max 10 Mo).`);
+      return;
+    }
+
+    // Ajouter fichiers dans formData
     formData.append('photos', file);
   }
 
-  statusMessage.textContent = 'Envoi en cours...';
-
   try {
-    const res = await fetch('http://localhost:3000/upload', {
+    statusDiv.textContent = "Envoi en cours...";
+    statusDiv.className = '';
+
+    const response = await fetch('/upload', {
       method: 'POST',
-      body: formData
+      body: formData,
     });
 
-    if (res.ok) {
-      statusMessage.textContent = '✅ Photos envoyées avec succès. Merci !';
-      uploadForm.reset();
-    } else {
-      statusMessage.textContent = '❌ Une erreur est survenue pendant l’envoi.';
+    if (!response.ok) {
+      // Essaie de récupérer le message d'erreur du backend (JSON)
+      let errorMsg = "Erreur lors de l'envoi. Veuillez réessayer.";
+      try {
+        const errJson = await response.json();
+        if (errJson?.message) errorMsg = errJson.message;
+      } catch {}
+
+      showError(errorMsg);
+      return;
     }
+
+    const result = await response.json();
+    showSuccess("Photos envoyées avec succès, merci !");
+    form.reset();
   } catch (err) {
-    console.error(err);
-    statusMessage.textContent = '❌ Impossible de contacter le serveur.';
+    showError("Erreur réseau. Vérifiez votre connexion.");
   }
 });
+
+function showError(message) {
+  statusDiv.textContent = message;
+  statusDiv.className = 'error';
+}
+
+function showSuccess(message) {
+  statusDiv.textContent = message;
+  statusDiv.className = 'success';
+}
