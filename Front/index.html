@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Partage photos - Mariage</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f28db0" />
+
+    <!-- Apple / iOS -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <!-- Service worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log("Service Worker registered", reg))
+                .catch(err => console.error("Service Worker error", err));
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📸 Partagez vos photos du mariage</h1>
+        <p>Importez vos plus belles photos du jour J !</p>
+
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="photoInput" name="photos" accept="image/*" multiple required />
+            <button type="submit">Envoyer les photos</button>
+        </form>
+
+        <div id="statusMessage"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
