@@ -7,7 +7,7 @@
     <title>Partage photos - Mariage</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="manifest" href="manifest.json" />
-    <meta name="theme-color" content="#f28db0" />
+    <meta name="theme-color" content="#fbeaea" />
 
     <!-- Apple / iOS -->
     <link rel="apple-touch-icon" href="icons/icon-192.png" />
@@ -25,17 +25,20 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>📸 Partagez vos photos du mariage</h1>
-        <p>Importez vos plus belles photos du jour J !</p>
+    <header class="header">
+        <h1>📸 Partagez vos plus belles photos</h1>
+        <p>Merci d’avoir célébré ce moment avec nous 💕</p>
+    </header>
 
-        <form id="uploadForm" enctype="multipart/form-data">
-            <input type="file" id="photoInput" name="photos" accept="image/*" multiple required />
-            <button type="submit">Envoyer les photos</button>
+    <main class="container">
+        <form id="uploadForm">
+            <label for="file">Sélectionnez vos photos :</label>
+            <input type="file" id="file" name="file" accept="image/*" multiple required />
+            <button type="submit">Envoyer</button>
         </form>
 
-        <div id="statusMessage"></div>
-    </div>
+        <div id="status"></div>
+    </main>
 
     <script src="script.js"></script>
 </body>
