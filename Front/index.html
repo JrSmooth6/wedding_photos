@@ -2,53 +2,53 @@
 <html lang="fr">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Partage photos - Mariage</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Partage photos - Mariage</title>
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Roboto&display=swap" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Roboto&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#fbeaea" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#fbeaea" />
 
-  <!-- Apple / iOS -->
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!-- Apple / iOS -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-  <!-- Service worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log("Service Worker registered", reg))
-        .catch(err => console.error("Service Worker error", err));
-    }
-  </script>
+    <!-- Service worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log("Service Worker registered", reg))
+                .catch(err => console.error("Service Worker error", err));
+        }
+    </script>
 </head>
 
 <body>
-  <header class="header">
-    <h1>💖 Partagez vos plus belles photos</h1>
-    <p>Merci d’avoir célébré ce moment avec nous 💍</p>
-  </header>
+    <header class="header">
+        <h1>💖 Partagez vos plus belles photos</h1>
+        <p>Merci d’avoir célébré ce moment avec nous 💍</p>
+    </header>
 
-  <main class="container">
-    <form id="uploadForm" novalidate>
-      <label for="file">Sélectionnez vos photos :</label>
-      <input type="file" id="file" name="file" accept="image/*" multiple required />
-      <button type="submit">Envoyer</button>
-    </form>
+    <main class="container">
+        <form id="uploadForm" novalidate>
+            <label for="file">Sélectionnez vos photos :</label>
+            <input type="file" id="file" name="file" accept="image/*,video/*" multiple required />
+            <button type="submit">Envoyer</button>
+        </form>
 
-    <div id="status" aria-live="polite"></div>
-  </main>
+        <div id="status" aria-live="polite"></div>
+    </main>
 
-  <footer class="footer">
-    <p>© 2025 Mariage - Tous droits réservés</p>
-  </footer>
+    <footer class="footer">
+        <p>© 2025 Mariage - Tous droits réservés</p>
+    </footer>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>

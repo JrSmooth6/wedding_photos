@@ -19,7 +19,7 @@ form.addEventListener('submit', async (e) => {
 
   for (const file of files) {
     // Optionnel: vérifier taille max (ex: 10 Mo)
-    if (file.size > 10 * 1024 * 1024) {
+    if (file.size > 30 * 1024 * 1024) {
       showError(`Le fichier "${file.name}" est trop volumineux (max 10 Mo).`);
       return;
     }
@@ -32,7 +32,7 @@ form.addEventListener('submit', async (e) => {
     statusDiv.textContent = "Envoi en cours...";
     statusDiv.className = '';
 
-    const response = await fetch('/upload', {
+    const response = await fetch('http://91.134.90.193:3000/upload', {
       method: 'POST',
       body: formData,
     });
