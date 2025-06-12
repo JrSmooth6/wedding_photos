@@ -32,7 +32,7 @@ form.addEventListener('submit', async (e) => {
     statusDiv.textContent = "Envoi en cours...";
     statusDiv.className = '';
 
-    const response = await fetch('http://91.134.90.193:3000/upload', {
+    const response = await fetch('/api/upload', {
       method: 'POST',
       body: formData,
     });
