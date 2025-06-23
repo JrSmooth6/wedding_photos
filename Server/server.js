@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
+const fsPromises = fs.promises;
 const path = require('path');
 const mime = require('mime-types');
 const convertHeicToJpeg = require('./convert-heic');
@@ -22,13 +23,19 @@ function logToFile(message) {
   fs.appendFileSync(logFilePath, fullMessage);
 }
 
+// Fonction asynchrone pour déplacer un fichier entre volumes différents
+async function moveFile(src, dest) {
+  await fsPromises.copyFile(src, dest);
+  await fsPromises.unlink(src);
+}
+
 // 📤 Upload de fichiers
 app.post('/upload', upload.array('photos', 20), async (req, res) => {
   try {
     const photoDir = path.join(__dirname, 'uploads/photos');
     const videoDir = path.join(__dirname, 'uploads/videos');
-    if (!fs.existsSync(photoDir)) fs.mkdirSync(photoDir, { recursive: true });
-    if (!fs.existsSync(videoDir)) fs.mkdirSync(videoDir, { recursive: true });
+    if (!fs.existsSync(photoDir)) await fsPromises.mkdir(photoDir, { recursive: true });
+    if (!fs.existsSync(videoDir)) await fsPromises.mkdir(videoDir, { recursive: true });
 
     for (const file of req.files) {
       const ext = mime.extension(file.mimetype);
@@ -42,18 +49,18 @@ app.post('/upload', upload.array('photos', 20), async (req, res) => {
         if (isHeic) {
           const outputPath = targetPath.replace(/\.heic$/i, '.jpg');
           await convertHeicToJpeg(file.path, outputPath);
-          fs.unlinkSync(file.path);
+          await fsPromises.unlink(file.path);
           logToFile(`✅ Image HEIC convertie et enregistrée : ${outputPath}`);
         } else {
-          fs.renameSync(file.path, targetPath);
+          await moveFile(file.path, targetPath);
           logToFile(`✅ Image enregistrée : ${targetPath}`);
         }
       } else if (isVideo) {
         const targetPath = path.join(videoDir, `${Date.now()}-${originalName}`);
-        fs.renameSync(file.path, targetPath);
+        await moveFile(file.path, targetPath);
         logToFile(`🎥 Vidéo enregistrée : ${targetPath}`);
       } else {
-        fs.unlinkSync(file.path);
+        await fsPromises.unlink(file.path);
         logToFile(`⚠️ Fichier ignoré (type non supporté) : ${originalName}`);
       }
     }

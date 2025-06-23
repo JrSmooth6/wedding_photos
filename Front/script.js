@@ -1,13 +1,13 @@
 const form = document.getElementById('uploadForm');
 const inputFile = document.getElementById('file');
 const statusDiv = document.getElementById('status');
+const progressBar = document.getElementById('progressBar');
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-
-  // Reset messages
   statusDiv.textContent = '';
   statusDiv.className = '';
+  progressBar.style.width = '0%';
 
   if (!inputFile.files.length) {
     showError("Veuillez sélectionner au moins une photo.");
@@ -15,51 +15,64 @@ form.addEventListener('submit', async (e) => {
   }
 
   const files = inputFile.files;
-  const formData = new FormData();
+  const totalFiles = files.length;
+  let successCount = 0;
 
-  for (const file of files) {
-    // Optionnel: vérifier taille max (ex: 10 Mo)
+  statusDiv.textContent = `0 / ${totalFiles} fichiers envoyés...`;
+
+  for (let i = 0; i < totalFiles; i++) {
+    const file = files[i];
+
     if (file.size > 30 * 1024 * 1024) {
-      showError(`Le fichier "${file.name}" est trop volumineux (max 10 Mo).`);
+      showError(`Le fichier "${file.name}" est trop volumineux (max 30 Mo).`);
       return;
     }
 
-    // Ajouter fichiers dans formData
+    const formData = new FormData();
     formData.append('photos', file);
+
+    try {
+      const response = await fetch('http://91.134.90.193:3000/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        let errorMsg = `Erreur lors de l'envoi du fichier "${file.name}".`;
+        try {
+          const errJson = await response.json();
+          if (errJson?.message) errorMsg = errJson.message;
+        } catch {}
+
+        showError(errorMsg);
+        return;
+      }
+
+      successCount++;
+      updateProgress(successCount, totalFiles);
+    } catch (err) {
+      showError(`Erreur réseau pour le fichier "${file.name}".`);
+      return;
+    }
   }
 
-  try {
-    statusDiv.textContent = "Envoi en cours...";
-    statusDiv.className = '';
-
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      // Essaie de récupérer le message d'erreur du backend (JSON)
-      let errorMsg = "Erreur lors de l'envoi. Veuillez réessayer.";
-      try {
-        const errJson = await response.json();
-        if (errJson?.message) errorMsg = errJson.message;
-      } catch {}
-
-      showError(errorMsg);
-      return;
-    }
-
-    const result = await response.json();
-    showSuccess("Photos envoyées avec succès, merci !");
+  if (successCount === totalFiles) {
+    showSuccess("Toutes les photos ont été envoyées avec succès !");
     form.reset();
-  } catch (err) {
-    showError("Erreur réseau. Vérifiez votre connexion.");
+    progressBar.style.width = '100%';
   }
 });
+
+function updateProgress(done, total) {
+  const percent = Math.round((done / total) * 100);
+  progressBar.style.width = percent + '%';
+  statusDiv.textContent = `${done} / ${total} fichiers envoyés...`;
+}
 
 function showError(message) {
   statusDiv.textContent = message;
   statusDiv.className = 'error';
+  progressBar.style.width = '0%';
 }
 
 function showSuccess(message) {

@@ -139,3 +139,19 @@ button:focus {
     font-size: 1rem;
   }
 }
+#progressContainer {
+  height: 1rem;
+  width: 100%;
+  background-color: #f8dede;
+  border-radius: 1rem;
+  overflow: hidden;
+  margin-top: -0.5rem;
+}
+
+#progressBar {
+  height: 100%;
+  width: 0%;
+  background-color: #f4a1a1;
+  transition: width 0.3s ease-in-out;
+}
+
